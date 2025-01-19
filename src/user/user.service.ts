@@ -1,26 +1,59 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { HashPassMiddleware } from '../hash-pass/hash-pass.middleware';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+  constructor(private prisma: PrismaService) { }
+
+  async create(createUserDto: CreateUserDto) {
+    const encrypt =  new HashPassMiddleware()
+    const pass = await encrypt.hash(createUserDto.password)
+
+    return this.prisma.user.create({
+      data: {
+        ...createUserDto,
+        password: pass
+      }
+    })
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.prisma.user.findMany()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: string, email?: string) {
+    return this.prisma.user.findFirst({
+      where: {
+       OR: [
+        {
+          id: id
+        },
+        {
+          email: email
+        }
+       ]
+      }
+    })
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return this.prisma.user.update({
+      where: {
+        id: id
+      },
+      data: updateUserDto
+    })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(id: string) {
+    return this.prisma.user.delete({
+      where: {
+        id: id
+      }
+    })
   }
 }
