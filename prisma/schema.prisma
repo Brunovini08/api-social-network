@@ -21,4 +21,15 @@ model User {
   password String
   photo String?
   createdAt DateTime @default(now())
+  posts Post[]
+
+}
+
+model Post {
+  id String @id @default(uuid())
+  title String
+  content String
+  imageUrl String
+  userId String
+  user User @relation(fields: [userId], references: [id])
 }
