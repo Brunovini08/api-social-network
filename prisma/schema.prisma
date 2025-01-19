@@ -13,33 +13,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id String @id @default(uuid())
-  name String
-  email String @unique
-  password String
-  photo String?
-  createdAt DateTime @default(now())
-  posts Post[]
-  comments Comment[]
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  photo     String?
+  createdAt DateTime  @default(now())
+  posts     Post[]
+  comments  Comment[]
+  likes Like[]
 }
 
 model Post {
-  id String @id @default(uuid())
-  title String
-  content String
-  imageUrl String
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  commets Comment[]
+  id        String    @id @default(uuid())
+  title     String
+  content   String
+  imageUrl  String
+  userId    String
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  comments   Comment[]
+  likes Like[]
 }
 
 model Comment {
-  id String @id @default(uuid())
-  content String
-  postId String
-  userId String
+  id        String   @id @default(uuid())
+  content   String
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
   post Post @relation(fields: [postId], references: [id])
   user User @relation(fields: [userId], references: [id])
 }
