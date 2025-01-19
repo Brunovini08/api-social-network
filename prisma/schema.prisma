@@ -22,7 +22,7 @@ model User {
   photo String?
   createdAt DateTime @default(now())
   posts Post[]
-
+  comments Comment[]
 }
 
 model Post {
@@ -32,4 +32,15 @@ model Post {
   imageUrl String
   userId String
   user User @relation(fields: [userId], references: [id])
+  commets Comment[]
 }
+
+model Comment {
+  id String @id @default(uuid())
+  content String
+  postId String
+  userId String
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
